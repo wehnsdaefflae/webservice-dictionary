@@ -9,7 +9,8 @@ from flask import jsonify, Response
 
 class Server:
     app = flask.Flask(__name__)
-    # app.config["DEBUG"] = True
+    # app.config["DEBUG"] = True  # automatic reload on code change
+
     path_file = Path("dictionary.json")
     if path_file.is_file():
         with path_file.open(mode="r") as file:

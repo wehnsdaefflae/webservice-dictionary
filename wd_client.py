@@ -23,7 +23,7 @@ class WSDict(MutableMapping):
     _complete = "api/webservice-dictionary/v1/complete/"
 
     def __init__(self, url_base: str, seq: Optional[Union[Tuple[Any, Any], Dict[Any, Any]]] = None, **kwargs):
-        self.url_base = "http://127.0.0.1:5000/"
+        self.url_base = url_base
         if seq is not None:
             if isinstance(seq, dict):
                 for k, v in seq.items():
@@ -78,7 +78,8 @@ if __name__ == "__main__":
     #print(unquote(s))
     #print(quote(s))
     d = WSDict("http://192.168.10.20:5000/")
-    d["testkey"] = "testvalue"
-    d[3] = [4, 6, 7]
+    #d["testkey"] = "testvalue"
+    #d[3] = [4, 6, 7]
 
-    print()
+    print(d["testkey"])
+    print(d[3])

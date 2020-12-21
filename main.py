@@ -30,8 +30,12 @@ class Server:
 
     @staticmethod
     def pop(key: str) -> Optional[str]:
-        value = Server.dictionary.pop(key)
-        Server._backup()
+        try:
+            value = Server.dictionary.pop(key)
+        except KeyError as e:
+            raise e
+        finally:
+            Server._backup()
         return value
 
     @staticmethod
@@ -75,6 +79,7 @@ def pop_value() -> Response:
 
     try:
         value = Server.pop(key)
+
     except KeyError as e:
         return jsonify(msg=str(e))
 

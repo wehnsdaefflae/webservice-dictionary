@@ -17,13 +17,13 @@ CT_co = TypeVar('CT_co', covariant=True, bound=type)
 
 
 class WSDict(MutableMapping):
-    _url = "http://127.0.0.1:5000/"
-    _set = _url + "api/webservice-dictionary/v1/set/"
-    _get = _url + "api/webservice-dictionary/v1/get/"
-    _pop = _url + "api/webservice-dictionary/v1/pop/"
-    _complete = _url + "api/webservice-dictionary/v1/complete/"
+    _set = "api/webservice-dictionary/v1/set/"
+    _get = "api/webservice-dictionary/v1/get/"
+    _pop = "api/webservice-dictionary/v1/pop/"
+    _complete = "api/webservice-dictionary/v1/complete/"
 
-    def __init__(self, seq: Optional[Union[Tuple[Any, Any], Dict[Any, Any]]] = None, **kwargs):
+    def __init__(self, url_base: str, seq: Optional[Union[Tuple[Any, Any], Dict[Any, Any]]] = None, **kwargs):
+        self.url_base = "http://127.0.0.1:5000/"
         if seq is not None:
             if isinstance(seq, dict):
                 for k, v in seq.items():
@@ -39,17 +39,17 @@ class WSDict(MutableMapping):
     def __setitem__(self, k: KT, v: VT) -> None:
         k_json = json.dumps(k)
         v_json = json.dumps(v)
-        url = WSDict._set + f"{quote(k_json):s}/{quote(v_json):s}"
+        url = self.url_base + WSDict._set + f"{quote(k_json):s}/{quote(v_json):s}"
         response = requests.get(url)
 
     def __delitem__(self, v: KT) -> None:
         k_json = json.dumps(v)
-        url = WSDict._pop + f"{quote(k_json):s}"
+        url = self.url_base + WSDict._pop + f"{quote(k_json):s}"
         response = requests.get(url)
 
     def __getitem__(self, k: KT) -> VT_co:
         k_json = json.dumps(k)
-        url = WSDict._get + f"{quote(k_json):s}"
+        url = self.url_base + WSDict._get + f"{quote(k_json):s}"
         response = requests.get(url)
         if not response.ok:
             return None
@@ -58,7 +58,7 @@ class WSDict(MutableMapping):
         return json.loads(value_str)
 
     def _get_response_dict(self) -> Dict[str, str]:
-        url = WSDict._complete
+        url = self.url_base + WSDict._complete
         response = requests.get(url)
         response_dict = json.loads(response.text)
         return response_dict
@@ -77,10 +77,8 @@ if __name__ == "__main__":
     #s = '"asef"'
     #print(unquote(s))
     #print(quote(s))
-    d = WSDict()
+    d = WSDict("http://192.168.10.20:5000/")
     d["testkey"] = "testvalue"
     d[3] = [4, 6, 7]
-    _url = WSDict._complete
-    _response = requests.get(_url)
 
     print()

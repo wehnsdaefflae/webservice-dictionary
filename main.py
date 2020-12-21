@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional, Dict
 
 import flask
-from flask import jsonify, Response
+from flask import jsonify, Response, request
 
 
 class Server:
@@ -30,13 +30,9 @@ class Server:
 
     @staticmethod
     def pop(key: str) -> Optional[str]:
-        try:
-            value = Server.dictionary.pop(key)
-            Server._backup()
-            return value
-
-        except KeyError:
-            return None
+        value = Server.dictionary.pop(key)
+        Server._backup()
+        return value
 
     @staticmethod
     def get(key: str) -> Optional[str]:
@@ -57,31 +53,48 @@ def home() -> Response:
     return jsonify(msg="<h1>Webservice Dictionary</h1><p>This site is a prototype API for a Python dictionary.</p>")
 
 
-@Server.app.route("/api/webservice-dictionary/v1/get/<string:key>")
-def get_value(key: str) -> Response:
-    value = Server.get(key)
+@Server.app.route("/api/webservice-dictionary/v1/set/", methods=["PUT"])
+def set_value() -> Response:
+    key = request.form.get("key")
+    if key is None:
+        return jsonify(msg="no key parameter received")
+
+    value = request.form.get("value")
     if value is None:
-        return jsonify(msg=f"no value for key '{key:s}'")
+        return jsonify(msg="no value parameter received")
 
-    return jsonify(value=value)
-
-
-@Server.app.route("/api/webservice-dictionary/v1/set/<string:key>/<string:value>")
-def set_value(key: str, value: str) -> Response:
     Server.set(key, value)
     return jsonify(msg="key mapped to value")
 
 
-@Server.app.route("/api/webservice-dictionary/v1/pop/<string:key>")
-def pop_value(key: str) -> Response:
-    value = Server.pop(key)
-    if value is None:
-        return jsonify(msg=f"no value for key '{key:s}'")
+@Server.app.route("/api/webservice-dictionary/v1/pop/", methods=["PUT"])
+def pop_value() -> Response:
+    key = request.form.get("key")
+    if key is None:
+        return jsonify(msg="no key parameter received")
+
+    try:
+        value = Server.pop(key)
+    except KeyError as e:
+        return jsonify(msg=str(e))
 
     return jsonify(value=value)
 
 
-@Server.app.route("/api/webservice-dictionary/v1/complete/")
+@Server.app.route("/api/webservice-dictionary/v1/get/", methods=["GET"])
+def get_value() -> Response:
+    key = request.args.get("key")
+    if key is None:
+        return jsonify(msg="no key parameter received")
+
+    value = Server.get(key)
+    if value is None:
+        return jsonify(msg=f"no value for key '{key:s}'")
+
+    return jsonify(msg="ok", value=value)
+
+
+@Server.app.route("/api/webservice-dictionary/v1/complete/", methods=["GET"])
 def complete() -> Response:
     dictionary = Server.complete()
     return jsonify(dictionary)

@@ -99,7 +99,7 @@ class WSDict(MutableMapping):
 
 
 if __name__ == "__main__":
-    d = WSDict("http://localhost:5000/")
+    d = WSDict("http://192.168.10.20:5000/")
 
     test_dict = {"a": 5, 5.3: [56, -3, [4.3, "w"]], (4, "b"): None}
 

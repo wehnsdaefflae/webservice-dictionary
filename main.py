@@ -87,4 +87,4 @@ def complete() -> Response:
 
 
 if __name__ == "__main__":
-    Server.app.run()
+    Server.app.run(host="0.0.0.0")

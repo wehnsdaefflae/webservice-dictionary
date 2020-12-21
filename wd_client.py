@@ -73,13 +73,3 @@ class WSDict(MutableMapping):
         return iter(dictionary)
 
 
-if __name__ == "__main__":
-    #s = '"asef"'
-    #print(unquote(s))
-    #print(quote(s))
-    d = WSDict("http://192.168.10.20:5000/")
-    #d["testkey"] = "testvalue"
-    #d[3] = [4, 6, 7]
-
-    print(d["testkey"])
-    print(d[3])
